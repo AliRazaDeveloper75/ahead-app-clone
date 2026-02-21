@@ -22,7 +22,7 @@ const AdminPanel = () => {
 
     const fetchUsers = async () => {
         try {
-            const response = await fetch('http://localhost:5000/api/admin/users');
+            const response = await fetch('/api/admin/users');
             const data = await response.json();
             setUsers(data);
         } catch (error) {
@@ -34,7 +34,7 @@ const AdminPanel = () => {
 
     const handleApprove = async (email) => {
         try {
-            const response = await fetch('http://localhost:5000/api/admin/approve', {
+            const response = await fetch('/api/admin/approve', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email })
@@ -165,7 +165,7 @@ const AdminPanel = () => {
                                             <td className="actions-col">
                                                 <button className="btn-icon" title="View Assessment" onClick={() => setSelectedUser(user)}>📊</button>
                                                 {user.paymentProof && (
-                                                    <button className="btn-icon" title="View Payment SS" onClick={() => setSelectedProof(`http://localhost:5000/uploads/${user.paymentProof}`)}>🖼️</button>
+                                                    <button className="btn-icon" title="View Payment SS" onClick={() => setSelectedProof(`/uploads/${user.paymentProof}`)}>🖼️</button>
                                                 )}
                                                 {user.status === 'awaiting_approval' && (
                                                     <button className="btn-approve-small" onClick={() => handleApprove(user.email)}>Approve</button>
@@ -204,7 +204,7 @@ const AdminPanel = () => {
                                             <td>{user.plan}</td>
                                             <td>{user.paymentMethod}</td>
                                             <td>
-                                                <button className="btn-view-text" onClick={() => setSelectedProof(`http://localhost:5000/uploads/${user.paymentProof}`)}>
+                                                <button className="btn-view-text" onClick={() => setSelectedProof(`/uploads/${user.paymentProof}`)}>
                                                     View Screenshot
                                                 </button>
                                             </td>

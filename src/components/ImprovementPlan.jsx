@@ -28,7 +28,7 @@ const ImprovementPlan = () => {
 
     const fetchUserStatus = async () => {
         try {
-            const response = await fetch(`http://localhost:5000/api/user/${email}/status`);
+            const response = await fetch(`/api/user/${email}/status`);
             const data = await response.json();
             setUser(data);
         } catch (error) {
@@ -40,7 +40,7 @@ const ImprovementPlan = () => {
 
     const handleCompleteTask = async (taskId) => {
         try {
-            const response = await fetch(`http://localhost:5000/api/user/${email}/tasks`, {
+            const response = await fetch(`/api/user/${email}/tasks`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ taskId })

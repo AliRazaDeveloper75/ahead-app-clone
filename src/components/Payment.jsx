@@ -28,7 +28,7 @@ const Payment = () => {
         formData.append('screenshot', screenshot);
 
         try {
-            const response = await fetch('http://localhost:5000/api/payment/manual', {
+            const response = await fetch('/api/payment/manual', {
                 method: 'POST',
                 body: formData,
             });
@@ -49,7 +49,7 @@ const Payment = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            const response = await fetch('http://localhost:5000/api/payment/online', {
+            const response = await fetch('/api/payment/online', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: userEmail, plan: selectedPlan })

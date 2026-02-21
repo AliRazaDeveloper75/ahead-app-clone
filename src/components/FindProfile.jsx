@@ -20,7 +20,7 @@ const FindProfile = () => {
         setError('');
 
         try {
-            const response = await fetch(`http://localhost:5000/api/user/${email}/status`);
+            const response = await fetch(`/api/user/${email}/status`);
             const data = await response.json();
 
             if (response.ok) {
