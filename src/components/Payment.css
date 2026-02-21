@@ -1,0 +1,111 @@
+.payment-page {
+    min-height: 100vh;
+    padding: 140px 0 80px;
+    background-color: var(--bg-color);
+    display: flex;
+    align-items: center;
+}
+
+.payment-container {
+    max-width: 550px;
+    margin: 0 auto;
+    background: var(--white);
+    padding: 50px;
+    border-radius: 40px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
+}
+
+.payment-container h2 {
+    font-size: 2.2rem;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.plan-summary {
+    text-align: center;
+    color: var(--text-muted);
+    margin-bottom: 40px;
+}
+
+.plan-summary strong {
+    color: var(--primary);
+    text-transform: capitalize;
+}
+
+.method-toggle {
+    display: flex;
+    background-color: #F8FAFC;
+    padding: 6px;
+    border-radius: 15px;
+    margin-bottom: 40px;
+}
+
+.method-toggle button {
+    flex: 1;
+    padding: 12px;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    color: var(--text-muted);
+}
+
+.method-toggle button.active {
+    background-color: var(--white);
+    color: var(--primary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.payment-form-wrapper form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.input-group label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.input-group input {
+    padding: 14px 20px;
+    border-radius: 12px;
+    border: 1px solid #E2E8F0;
+    font-size: 1rem;
+}
+
+.input-row {
+    display: flex;
+    gap: 20px;
+}
+
+.input-row .input-group {
+    flex: 1;
+}
+
+.payment-instructions {
+    background-color: #F5F3FF;
+    padding: 20px;
+    border-radius: 15px;
+    border: 1px dashed var(--primary-light);
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.payment-instructions strong {
+    display: block;
+    margin: 10px 0;
+    font-size: 1.1rem;
+    color: var(--primary);
+}
+
+.payment-form-wrapper button {
+    margin-top: 10px;
+    padding: 18px;
+}

@@ -1,0 +1,83 @@
+.features {
+    padding: 100px 0;
+    background-color: var(--white);
+    overflow: hidden;
+}
+
+.features-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 60px;
+    gap: 40px;
+}
+
+.features-header h2 {
+    font-size: 3rem;
+    max-width: 400px;
+}
+
+.header-text {
+    max-width: 600px;
+    font-size: 1.25rem;
+    color: var(--text-muted);
+}
+
+.features-carousel-wrapper {
+    cursor: grab;
+    padding: 20px 0;
+}
+
+.features-carousel-wrapper:active {
+    cursor: grabbing;
+}
+
+.features-carousel {
+    display: flex;
+    gap: 30px;
+    padding-left: 20px;
+}
+
+.feature-card {
+    min-width: 320px;
+    height: 250px;
+    padding: 30px;
+    border-radius: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    transition: transform var(--transition-fast);
+}
+
+.feature-card:hover {
+    transform: translateY(-10px) rotate(1deg);
+}
+
+.card-icon {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.feature-card h3 {
+    font-size: 1.5rem;
+}
+
+.feature-card p {
+    color: rgba(0, 0, 0, 0.6);
+    font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+    .features-header {
+        flex-direction: column;
+        text-align: left;
+    }
+
+    .features-header h2 {
+        font-size: 2.5rem;
+    }
+
+    .feature-card {
+        min-width: 280px;
+    }
+}

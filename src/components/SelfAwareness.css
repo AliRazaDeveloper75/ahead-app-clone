@@ -1,0 +1,62 @@
+.self-awareness {
+    padding: 100px 0;
+}
+
+.sa-card {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 30px;
+}
+
+.sa-content,
+.sa-test {
+    padding: 60px;
+    border-radius: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    justify-content: center;
+}
+
+.sa-content {
+    background-color: var(--white);
+    border: 1px solid #E2E8F0;
+}
+
+.sa-test {
+    background-color: #EDE9FE;
+    /* Light purple */
+    text-align: center;
+    align-items: center;
+}
+
+.test-badge {
+    background-color: var(--primary);
+    color: var(--white);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.sa-test h2 {
+    font-size: 2.5rem;
+}
+
+.sa-test p {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    max-width: 400px;
+}
+
+@media (max-width: 992px) {
+    .sa-card {
+        grid-template-columns: 1fr;
+    }
+
+    .sa-content,
+    .sa-test {
+        padding: 40px 20px;
+    }
+}
