@@ -9,16 +9,24 @@ const PORT = 5000;
 
 app.use(cors());
 app.use(express.json());
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-const DATA_FILE = path.join(__dirname, 'data.json');
-const UPLOADS_DIR = path.join(__dirname, 'uploads');
+// Environment-aware paths
+const isProduction = process.env.VERCEL === '1';
+const BASE_DIR = isProduction ? '/tmp' : __dirname;
+const DATA_FILE = path.join(BASE_DIR, 'data.json');
+const UPLOADS_DIR = path.join(BASE_DIR, 'uploads');
 
 // Ensure directories and data file exist
-fs.ensureDirSync(UPLOADS_DIR);
-if (!fs.existsSync(DATA_FILE)) {
-    fs.writeJsonSync(DATA_FILE, { users: [] });
+try {
+    fs.ensureDirSync(UPLOADS_DIR);
+    if (!fs.existsSync(DATA_FILE)) {
+        fs.writeJsonSync(DATA_FILE, { users: [] });
+    }
+} catch (error) {
+    console.warn('Filesystem warning:', error.message);
 }
+
+app.use('/uploads', express.static(UPLOADS_DIR));
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
