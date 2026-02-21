@@ -9,6 +9,7 @@ const AdminPanel = () => {
     const [selectedProof, setSelectedProof] = useState(null);
     const [selectedUser, setSelectedUser] = useState(null);
     const [activeTab, setActiveTab] = useState('overview'); // 'overview', 'users', 'payments'
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -54,6 +55,12 @@ const AdminPanel = () => {
         navigate('/admin-login');
     };
 
+    const handleTabChange = (tab) => {
+        setActiveTab(tab);
+        setIsSidebarOpen(false);
+        window.scrollTo(0, 0);
+    };
+
     const stats = {
         totalUsers: users.length,
         activePlans: users.filter(u => u.status === 'active').length,
@@ -64,21 +71,24 @@ const AdminPanel = () => {
     if (loading) return <div className="admin-loading">Loading Dashboard...</div>;
 
     return (
-        <div className="admin-dashboard">
+        <div className={`admin-dashboard ${isSidebarOpen ? 'sidebar-open' : ''}`}>
+            {/* Sidebar Overlay */}
+            <div className="sidebar-overlay" onClick={() => setIsSidebarOpen(false)}></div>
+
             {/* Sidebar */}
-            <aside className="admin-sidebar">
+            <aside className={`admin-sidebar ${isSidebarOpen ? 'open' : ''}`}>
                 <div className="sidebar-brand">
                     <span className="logo-icon">🧠</span>
                     <h2>AdminMind</h2>
                 </div>
                 <nav className="sidebar-nav">
-                    <button className={activeTab === 'overview' ? 'active' : ''} onClick={() => setActiveTab('overview')}>
+                    <button className={activeTab === 'overview' ? 'active' : ''} onClick={() => handleTabChange('overview')}>
                         📊 Overview
                     </button>
-                    <button className={activeTab === 'users' ? 'active' : ''} onClick={() => setActiveTab('users')}>
+                    <button className={activeTab === 'users' ? 'active' : ''} onClick={() => handleTabChange('users')}>
                         👥 Users
                     </button>
-                    <button className={activeTab === 'payments' ? 'active' : ''} onClick={() => setActiveTab('payments')}>
+                    <button className={activeTab === 'payments' ? 'active' : ''} onClick={() => handleTabChange('payments')}>
                         💳 Payments
                     </button>
                 </nav>
@@ -90,9 +100,12 @@ const AdminPanel = () => {
             {/* Main Content */}
             <main className="admin-main">
                 <header className="main-header">
-                    <h1>{activeTab === 'overview' ? 'Dashboard Overview' : activeTab === 'users' ? 'User Management' : 'Payment Requests'}</h1>
-                    <div className="admin-profile">
-                        <span>Logged in as Admin</span>
+                    <div className="header-left">
+                        <button className="sidebar-toggle" onClick={() => setIsSidebarOpen(true)}>☰</button>
+                        <h1>{activeTab === 'overview' ? 'Dashboard Overview' : activeTab === 'users' ? 'User Management' : 'Payment Requests'}</h1>
+                    </div>
+                    <div className="admin-profile desktop-only">
+                        <span>Admin</span>
                         <div className="avatar">A</div>
                     </div>
                 </header>
@@ -107,22 +120,18 @@ const AdminPanel = () => {
                             <div className="stat-card">
                                 <h3>Total Users</h3>
                                 <p className="stat-value">{stats.totalUsers}</p>
-                                <span className="stat-trend">↑ 12% from last month</span>
                             </div>
                             <div className="stat-card">
                                 <h3>Active Plans</h3>
                                 <p className="stat-value">{stats.activePlans}</p>
-                                <span className="stat-label">Currently learning</span>
                             </div>
                             <div className="stat-card warning">
                                 <h3>Pending Approval</h3>
                                 <p className="stat-value">{stats.pendingApproval}</p>
-                                <span className="stat-label">Needs your attention</span>
                             </div>
                             <div className="stat-card success">
                                 <h3>Est. Revenue</h3>
-                                <p className="stat-value">${stats.revenue.toFixed(2)}</p>
-                                <span className="stat-trend">↑ $150.00 today</span>
+                                <p className="stat-value">${stats.revenue.toFixed(0)}</p>
                             </div>
                         </motion.div>
                     )}
@@ -136,45 +145,44 @@ const AdminPanel = () => {
                         >
                             <div className="table-header">
                                 <h2>{activeTab === 'overview' ? 'Recent Users' : 'All Users'}</h2>
-                                <button className="btn-refresh" onClick={fetchUsers}>🔄 Refresh</button>
+                                <button className="btn-refresh" onClick={fetchUsers}>🔄</button>
                             </div>
-                            <table className="admin-table">
-                                <thead>
-                                    <tr>
-                                        <th>Join Date</th>
-                                        <th>User Details</th>
-                                        <th>Status</th>
-                                        <th>Plan</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {(activeTab === 'overview' ? users.slice(0, 5) : users).map((user) => (
-                                        <tr key={user.email}>
-                                            <td className="date-col">{user.signupDate ? new Date(user.signupDate).toLocaleDateString() : 'N/A'}</td>
-                                            <td className="user-info-col">
-                                                <strong>{user.email}</strong>
-                                                <span>Assessment: {Object.keys(user.results || {}).length} Qs</span>
-                                            </td>
-                                            <td>
-                                                <span className={`status-pill ${user.status}`}>
-                                                    {user.status.replace('_', ' ')}
-                                                </span>
-                                            </td>
-                                            <td>{user.plan || 'No plan selected'}</td>
-                                            <td className="actions-col">
-                                                <button className="btn-icon" title="View Assessment" onClick={() => setSelectedUser(user)}>📊</button>
-                                                {user.paymentProof && (
-                                                    <button className="btn-icon" title="View Payment SS" onClick={() => setSelectedProof(`/uploads/${user.paymentProof}`)}>🖼️</button>
-                                                )}
-                                                {user.status === 'awaiting_approval' && (
-                                                    <button className="btn-approve-small" onClick={() => handleApprove(user.email)}>Approve</button>
-                                                )}
-                                            </td>
+                            <div className="table-responsive">
+                                <table className="admin-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Email</th>
+                                            <th>Status</th>
+                                            <th>Plan</th>
+                                            <th>Actions</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        {(activeTab === 'overview' ? users.slice(0, 5) : users).map((user) => (
+                                            <tr key={user.email}>
+                                                <td>{user.signupDate ? new Date(user.signupDate).toLocaleDateString() : 'N/A'}</td>
+                                                <td className="email-cell">{user.email}</td>
+                                                <td>
+                                                    <span className={`status-pill ${user.status}`}>
+                                                        {user.status === 'awaiting_approval' ? 'Pending' : user.status}
+                                                    </span>
+                                                </td>
+                                                <td>{user.plan || 'N/A'}</td>
+                                                <td className="actions-col">
+                                                    <button className="btn-icon" onClick={() => setSelectedUser(user)}>📊</button>
+                                                    {user.paymentProof && (
+                                                        <button className="btn-icon" onClick={() => setSelectedProof(`/uploads/${user.paymentProof}`)}>🖼️</button>
+                                                    )}
+                                                    {user.status === 'awaiting_approval' && (
+                                                        <button className="btn-approve-small" onClick={() => handleApprove(user.email)}>✔</button>
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
                         </motion.div>
                     )}
 
@@ -187,45 +195,44 @@ const AdminPanel = () => {
                             <div className="table-header">
                                 <h2>Pending Approvals</h2>
                             </div>
-                            <table className="admin-table">
-                                <thead>
-                                    <tr>
-                                        <th>Email</th>
-                                        <th>Plan</th>
-                                        <th>Method</th>
-                                        <th>Proof</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {users.filter(u => u.status === 'awaiting_approval').map(user => (
-                                        <tr key={user.email}>
-                                            <td>{user.email}</td>
-                                            <td>{user.plan}</td>
-                                            <td>{user.paymentMethod}</td>
-                                            <td>
-                                                <button className="btn-view-text" onClick={() => setSelectedProof(`/uploads/${user.paymentProof}`)}>
-                                                    View Screenshot
-                                                </button>
-                                            </td>
-                                            <td>
-                                                <button className="btn-approve" onClick={() => handleApprove(user.email)}>Approve Access</button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                    {users.filter(u => u.status === 'awaiting_approval').length === 0 && (
+                            <div className="table-responsive">
+                                <table className="admin-table">
+                                    <thead>
                                         <tr>
-                                            <td colSpan="5" className="empty-row">No pending payments.</td>
+                                            <th>Email</th>
+                                            <th>Plan</th>
+                                            <th>Proof</th>
+                                            <th>Action</th>
                                         </tr>
-                                    )}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        {users.filter(u => u.status === 'awaiting_approval').map(user => (
+                                            <tr key={user.email}>
+                                                <td className="email-cell">{user.email}</td>
+                                                <td>{user.plan}</td>
+                                                <td>
+                                                    <button className="btn-view-text" onClick={() => setSelectedProof(`/uploads/${user.paymentProof}`)}>
+                                                        View
+                                                    </button>
+                                                </td>
+                                                <td>
+                                                    <button className="btn-approve-small" onClick={() => handleApprove(user.email)}>Approve</button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                        {users.filter(u => u.status === 'awaiting_approval').length === 0 && (
+                                            <tr>
+                                                <td colSpan="4" className="empty-row">No pending payments.</td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
                         </motion.div>
                     )}
                 </div>
             </main>
 
-            {/* Modals */}
             <AnimatePresence>
                 {selectedProof && (
                     <motion.div className="modal-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setSelectedProof(null)}>
@@ -240,7 +247,7 @@ const AdminPanel = () => {
                     <motion.div className="modal-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setSelectedUser(null)}>
                         <motion.div className="modal-content assessment-detail" initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} onClick={e => e.stopPropagation()}>
                             <header className="modal-header">
-                                <h2>User Assessment Detail</h2>
+                                <h2>Assessment Detail</h2>
                                 <p>{selectedUser.email}</p>
                             </header>
                             <div className="detail-scroll">

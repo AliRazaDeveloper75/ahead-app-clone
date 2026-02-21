@@ -11,6 +11,7 @@ import ImprovementPlan from './components/ImprovementPlan';
 import AdminLogin from './components/AdminLogin';
 import AdminPanel from './components/AdminPanel';
 import Footer from './components/Footer';
+import ScrollToTop from './components/ScrollToTop';
 import Emotions from './pages/Emotions';
 import ManifestoPage from './pages/ManifestoPage';
 import SelfAwarenessPage from './pages/SelfAwarenessPage';
@@ -35,6 +36,7 @@ const LayoutWrapper = ({ children }) => {
 function App() {
   return (
     <Router>
+      <ScrollToTop />
       <LayoutWrapper>
         <Routes>
           <Route path="/" element={<LandingPage />} />

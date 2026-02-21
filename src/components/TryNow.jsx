@@ -195,6 +195,7 @@ const TryNow = () => {
         if (currentStep < questions.length - 1) {
             setCurrentStep(currentStep + 1);
             setMultiSelect([]);
+            window.scrollTo(0, 0);
         } else {
             setIsFinished(true);
             // Save results to localStorage

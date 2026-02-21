@@ -337,9 +337,91 @@
     color: var(--admin-text-light);
 }
 
+/* Mobile Sidebar Toggle */
+.sidebar-toggle {
+    display: none;
+    font-size: 1.5rem;
+    background: none;
+    border: none;
+    color: var(--admin-text);
+    cursor: pointer;
+    margin-right: 15px;
+}
+
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1000;
+}
+
+.table-responsive {
+    overflow-x: auto;
+    width: 100%;
+}
+
 @media (max-width: 1200px) {
     .stats-grid {
         grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 992px) {
+    .sidebar-toggle {
+        display: block;
+    }
+
+    .admin-sidebar {
+        left: -100%;
+        z-index: 1001;
+        transition: left 0.3s ease;
+    }
+
+    .admin-sidebar.open {
+        left: 0;
+    }
+
+    .admin-dashboard.sidebar-open .sidebar-overlay {
+        display: block;
+    }
+
+    .admin-main {
+        margin-left: 0;
+        padding: 24px;
+    }
+
+    .main-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+    }
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        width: 100%;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .table-container {
+        padding: 20px;
+    }
+
+    .email-cell {
+        max-width: 150px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .modal-content.assessment-detail {
+        width: 90%;
+        padding: 24px;
     }
 }
 
@@ -361,5 +443,21 @@
 
     .stats-grid {
         grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .stat-value {
+        font-size: 1.5rem;
+    }
+
+    .admin-table th,
+    .admin-table td {
+        padding: 12px 8px;
+        font-size: 0.8rem;
+    }
+
+    .btn-approve-small {
+        padding: 4px 8px;
     }
 }

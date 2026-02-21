@@ -242,11 +242,43 @@
 }
 
 @media (max-width: 768px) {
-    .dashboard-grid {
-        grid-template-columns: 1fr;
+    .user-dashboard {
+        padding: 100px 0 60px;
+    }
+
+    .user-meta {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
     }
 
     .user-meta h1 {
         font-size: 1.8rem;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .dashboard-card {
+        padding: 20px;
+    }
+
+    .radar-placeholder {
+        height: 140px;
+    }
+
+    .radar-circle {
+        display: none;
+        /* Hide for cleaner mobile view */
+    }
+
+    .radar-icon {
+        font-size: 3rem;
+    }
+
+    .big-stat .value {
+        font-size: 3rem;
     }
 }
