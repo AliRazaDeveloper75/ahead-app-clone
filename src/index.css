@@ -10,14 +10,17 @@
   --text-main: #2D3748;
   --text-muted: #718096;
   --white: #FFFFFF;
-  
+
   /* Layout */
   --header-height: 80px;
   --container-max-width: 1200px;
-  
+
   /* Transitions */
   --transition-fast: 0.2s ease;
   --transition-slow: 0.5s ease;
+
+  /* Safe Areas */
+  --safe-area-bottom: env(safe-area-inset-bottom, 20px);
 }
 
 * {
@@ -34,7 +37,10 @@ body {
   overflow-x: hidden;
 }
 
-h1, h2, h3, h4 {
+h1,
+h2,
+h3,
+h4 {
   font-family: 'Outfit', sans-serif;
   font-weight: 700;
   color: #1A202C;
@@ -88,8 +94,23 @@ button {
   color: var(--white);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 576px) {
   :root {
-    --header-height: 70px;
+    --header-height: 60px;
+  }
+
+  body {
+    padding-bottom: calc(70px + var(--safe-area-bottom));
+  }
+
+  .container {
+    padding: 0 16px;
+  }
+
+  .btn {
+    padding: 14px 28px;
+    /* Slightly larger for touch */
+    width: 100%;
+    /* Full width buttons on mobile usually feel better */
   }
 }

@@ -12,6 +12,7 @@ import AdminLogin from './components/AdminLogin';
 import AdminPanel from './components/AdminPanel';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
+import MobileBottomNav from './components/MobileBottomNav';
 import Emotions from './pages/Emotions';
 import ManifestoPage from './pages/ManifestoPage';
 import SelfAwarenessPage from './pages/SelfAwarenessPage';
@@ -28,6 +29,7 @@ const LayoutWrapper = ({ children }) => {
       <main>
         {children}
       </main>
+      {!isAdmin && <MobileBottomNav />}
       {!isAdmin && <Footer />}
     </div>
   );
