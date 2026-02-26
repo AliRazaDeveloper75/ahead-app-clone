@@ -60,3 +60,23 @@
         padding: 40px 20px;
     }
 }
+
+@media (max-width: 576px) {
+    .self-awareness {
+        padding: 60px 0;
+    }
+
+    .sa-content,
+    .sa-test {
+        padding: 30px 16px;
+        border-radius: 24px;
+    }
+
+    .sa-test h2 {
+        font-size: 1.8rem;
+    }
+
+    .sa-test p {
+        font-size: 1rem;
+    }
+}

@@ -81,3 +81,32 @@
         min-width: 280px;
     }
 }
+
+@media (max-width: 576px) {
+    .features {
+        padding: 60px 0;
+    }
+
+    .features-header {
+        margin-bottom: 30px;
+        gap: 20px;
+    }
+
+    .features-header h2 {
+        font-size: 1.8rem;
+    }
+
+    .header-text {
+        font-size: 1rem;
+    }
+
+    .feature-card {
+        min-width: 260px;
+        padding: 20px;
+        height: 220px;
+    }
+
+    .feature-card h3 {
+        font-size: 1.25rem;
+    }
+}
