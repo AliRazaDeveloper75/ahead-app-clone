@@ -60,6 +60,8 @@ app.post('/api/assessment', (req, res) => {
     } else {
         user = {
             email,
+            name: '',
+            phone: '',
             results,
             status: 'pending',
             plan: null,
@@ -147,6 +149,22 @@ app.post('/api/user/:email/tasks', (req, res) => {
         res.json({ success: true, completedTasks: user.completedTasks });
     } else {
         res.status(403).json({ error: 'Unauthorised or plan not active' });
+    }
+});
+
+// Update User Profile
+app.put('/api/user/:email/profile', (req, res) => {
+    const { name, phone } = req.body;
+    const users = getUsers();
+    const user = users.find(u => u.email === req.params.email);
+
+    if (user) {
+        user.name = name || user.name;
+        user.phone = phone || user.phone;
+        saveUsers(users);
+        res.json({ success: true, user });
+    } else {
+        res.status(404).json({ success: false, error: 'User not found' });
     }
 });
 

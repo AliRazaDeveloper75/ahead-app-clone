@@ -10,6 +10,38 @@ const WEEKS = [
     { id: 4, title: 'Week 4: Long-term Growth', days: 7 }
 ];
 
+// Custom Animated SVG Icons
+const StatusIcon = ({ type }) => {
+    switch (type) {
+        case 'completed':
+            return (
+                <svg className="icon-svg completed-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+            );
+        case 'current':
+            return (
+                <svg className="icon-svg current-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                </svg>
+            );
+        case 'unlocked':
+            return (
+                <svg className="icon-svg unlocked-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 9.9-1"></path>
+                </svg>
+            );
+        default:
+            return (
+                <svg className="icon-svg locked-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+            );
+    }
+};
+
 const ImprovementPlan = () => {
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
@@ -108,35 +140,76 @@ const ImprovementPlan = () => {
                     <p>Complete each day's task to unlock the next level. Current target: <strong>Day {currentActiveDay}</strong></p>
                 </header>
 
-                <div className="weeks-container">
-                    {WEEKS.map(week => (
-                        <div key={week.id} className="week-section">
-                            <h3>{week.title}</h3>
-                            <div className="days-grid">
-                                {Array.from({ length: week.days }).map((_, i) => {
-                                    const dayNum = (week.id - 1) * 7 + (i + 1);
+                <div className="map-container snake-layout">
+                    {/* Decorative Background Elements */}
+                    <div className="decorations">
+                        <div className="decoration cloud c1">☁️</div>
+                        <div className="decoration cloud c2">☁️</div>
+                        <div className="decoration island i1">🏝️</div>
+                        <div className="decoration island i2">⛰️</div>
+                        <div className="decoration sparkle s1">✨</div>
+                        <div className="decoration sparkle s2">✨</div>
+                    </div>
+
+                    <div className="weeks-wrapper">
+                        {[0, 1, 2, 3].map(weekIndex => (
+                            <div key={weekIndex} className={`week-row ${weekIndex % 2 === 1 ? 'reverse' : 'normal'}`}>
+                                {Array.from({ length: 7 }).map((_, dayInWeek) => {
+                                    const dayNum = weekIndex * 7 + (dayInWeek + 1);
                                     const taskId = `day-${dayNum}`;
                                     const isUnlocked = isDayUnlocked(dayNum);
                                     const isCompleted = user.completedTasks.includes(taskId);
                                     const isCurrent = dayNum === currentActiveDay;
+                                    const isWeekEnd = dayNum % 7 === 0;
 
                                     return (
                                         <motion.div
                                             key={taskId}
-                                            className={`day-card ${isUnlocked ? 'unlocked' : 'locked'} ${isCompleted ? 'completed' : ''} ${isCurrent ? 'current' : ''}`}
-                                            whileHover={isUnlocked && !isCompleted ? { scale: 1.05 } : {}}
+                                            className={`level-node ${isUnlocked ? 'unlocked' : 'locked'} ${isCompleted ? 'completed' : ''} ${isCurrent ? 'current' : ''} ${isWeekEnd ? 'week-end' : ''}`}
+                                            initial={{ opacity: 0, scale: 0.5, rotateY: 90 }}
+                                            whileInView={{ opacity: 1, scale: 1, rotateY: 0 }}
+                                            viewport={{ once: true, margin: "-50px" }}
+                                            transition={{
+                                                type: "spring",
+                                                stiffness: 260,
+                                                damping: 20,
+                                                delay: (dayNum % 7) * 0.05
+                                            }}
                                             onClick={() => isUnlocked && !isCompleted && setActiveTask(dayNum)}
                                         >
-                                            <div className="day-number">Day {dayNum}</div>
-                                            <div className="day-status">
-                                                {isCompleted ? '✅' : isCurrent ? '📖' : isUnlocked ? '🔓' : '🔒'}
+                                            {isCurrent && (
+                                                <motion.div
+                                                    className="character-indicator"
+                                                    animate={{
+                                                        y: [0, -15, 0],
+                                                        rotate: [-2, 2, -2]
+                                                    }}
+                                                    transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
+                                                >
+                                                    <div className="character-bubble">Next Step!</div>
+                                                    <div className="character-icon">✨</div>
+                                                </motion.div>
+                                            )}
+
+                                            <div className="node-3d-wrapper">
+                                                <div className="node-content">
+                                                    <div className="node-inner">
+                                                        <div className="node-number">{dayNum < 10 ? `0${dayNum}` : dayNum}</div>
+                                                        <div className="node-status-icon">
+                                                            <StatusIcon type={isCompleted ? 'completed' : isCurrent ? 'current' : isUnlocked ? 'unlocked' : 'locked'} />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="node-shadow"></div>
+                                                {isCurrent && <div className="node-aura"></div>}
                                             </div>
+                                            <div className="node-label">Day {dayNum}</div>
                                         </motion.div>
                                     );
                                 })}
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
 
                 <AnimatePresence>
