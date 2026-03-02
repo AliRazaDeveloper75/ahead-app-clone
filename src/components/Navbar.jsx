@@ -36,6 +36,7 @@ const Navbar = () => {
 
   return (
     <nav className={`navbar ${scrolled ? 'scrolled' : ''} ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
+      <div className={`nav-overlay ${isMobileMenuOpen ? 'active' : ''}`} onClick={() => setIsMobileMenuOpen(false)}></div>
       <div className="container nav-content">
         <Link to="/" className="logo" onClick={() => setIsMobileMenuOpen(false)}>
           <motion.div
