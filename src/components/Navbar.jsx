@@ -92,12 +92,12 @@ const Navbar = () => {
         >
           {user ? (
             <>
-              <Link to="/profile" className="btn btn-outline" style={{ marginRight: '10px' }}>Profile</Link>
+              <Link to="/profile" className="btn btn-outline">Profile</Link>
               <button onClick={handleLogout} className="btn btn-primary" style={{ background: '#EF4444' }}>Logout</button>
             </>
           ) : (
             <>
-              <Link to="/find-profile" className="btn btn-outline" style={{ marginRight: '10px' }}>My Profile</Link>
+              <Link to="/find-profile" className="btn btn-outline">My Profile</Link>
               <Link to="/try-now" className="btn btn-primary">Try now</Link>
             </>
           )}
