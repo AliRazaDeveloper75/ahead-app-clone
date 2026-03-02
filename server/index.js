@@ -334,6 +334,13 @@ app.put('/api/user/:email/profile', async (req, res) => {
 
 // Admin: Get all users
 app.get('/api/admin/users', async (req, res) => {
+    if (mongoose.connection.readyState !== 1) {
+        return res.status(503).json({
+            success: false,
+            error: 'Database not connected.',
+            tip: 'Please ensure MONGODB_URI is set in Vercel environment variables and your IP is whitelisted in MongoDB Atlas.'
+        });
+    }
     try {
         const users = await User.find().sort({ signupDate: -1 });
         res.json(users);
@@ -350,6 +357,13 @@ app.get('/api/admin/users', async (req, res) => {
 
 // Admin: Get all admins
 app.get('/api/admin/admins', async (req, res) => {
+    if (mongoose.connection.readyState !== 1) {
+        return res.status(503).json({
+            success: false,
+            error: 'Database not connected.',
+            tip: 'Ensure MONGODB_URI is set in Vercel environment variables.'
+        });
+    }
     try {
         const admins = await Admin.find({}, { password: 0 }); // Don't return passwords
         res.json(admins);

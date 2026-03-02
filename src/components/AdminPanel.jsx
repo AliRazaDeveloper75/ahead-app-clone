@@ -41,7 +41,8 @@ const AdminPanel = () => {
                 setUsers(usersData);
                 setAdmins(adminsData);
             } else {
-                setError('Failed to fetch data from server');
+                const errData = await usersRes.json().catch(() => ({}));
+                setError(errData.tip || errData.error || 'Failed to fetch data from server');
             }
         } catch (error) {
             console.error('Error fetching data:', error);
