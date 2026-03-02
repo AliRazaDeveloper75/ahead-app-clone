@@ -232,6 +232,7 @@ app.post('/api/admin/login', async (req, res) => {
 app.post('/api/assessment', async (req, res) => {
     const { email, results, name, phone } = req.body;
     try {
+        await connectDB();
         let user = await User.findOne({ email });
 
         if (user) {
@@ -264,6 +265,7 @@ app.post('/api/assessment', async (req, res) => {
 app.post('/api/payment/manual', upload.single('screenshot'), async (req, res) => {
     const { email, transactionId, plan } = req.body;
     try {
+        await connectDB();
         const user = await User.findOne({ email });
 
         if (user) {
@@ -286,6 +288,7 @@ app.post('/api/payment/manual', upload.single('screenshot'), async (req, res) =>
 app.post('/api/payment/online', async (req, res) => {
     const { email, plan } = req.body;
     try {
+        await connectDB();
         const user = await User.findOne({ email });
 
         if (user) {
@@ -305,6 +308,7 @@ app.post('/api/payment/online', async (req, res) => {
 // Get User Status
 app.get('/api/user/:email/status', async (req, res) => {
     try {
+        await connectDB();
         const user = await User.findOne({ email: req.params.email });
         if (user) {
             res.json(user);
@@ -320,6 +324,7 @@ app.get('/api/user/:email/status', async (req, res) => {
 app.post('/api/user/:email/tasks', async (req, res) => {
     const { taskId } = req.body;
     try {
+        await connectDB();
         const user = await User.findOne({ email: req.params.email });
 
         if (user && user.status === 'active') {
@@ -340,6 +345,7 @@ app.post('/api/user/:email/tasks', async (req, res) => {
 app.put('/api/user/:email/profile', async (req, res) => {
     const { name, phone } = req.body;
     try {
+        await connectDB();
         const user = await User.findOne({ email: req.params.email });
 
         if (user) {
@@ -382,14 +388,8 @@ app.get('/api/admin/users', async (req, res) => {
 
 // Admin: Get all admins
 app.get('/api/admin/admins', async (req, res) => {
-    if (mongoose.connection.readyState !== 1) {
-        return res.status(503).json({
-            success: false,
-            error: 'Database not connected.',
-            tip: 'Ensure MONGODB_URI is set in Vercel environment variables.'
-        });
-    }
     try {
+        await connectDB();
         const admins = await Admin.find({}, { password: 0 }); // Don't return passwords
         res.json(admins);
     } catch (error) {
@@ -401,6 +401,7 @@ app.get('/api/admin/admins', async (req, res) => {
 app.post('/api/admin/create-super-user', async (req, res) => {
     const { username, password } = req.body;
     try {
+        await connectDB();
         const existing = await Admin.findOne({ username });
         if (existing) {
             return res.status(400).json({ success: false, error: 'Admin username already exists' });
@@ -420,6 +421,7 @@ app.post('/api/admin/create-super-user', async (req, res) => {
 app.post('/api/admin/approve', async (req, res) => {
     const { email } = req.body;
     try {
+        await connectDB();
         const user = await User.findOne({ email });
 
         if (user) {
