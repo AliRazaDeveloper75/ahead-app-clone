@@ -441,7 +441,23 @@ const AdminPanel = () => {
                                 <h2>Payment Proof</h2>
                                 <button className="close-btn" onClick={() => setSelectedProof(null)}>×</button>
                             </header>
-                            <img src={selectedProof} alt="Payment Proof" />
+                            <div className="proof-image-container">
+                                <img
+                                    src={selectedProof}
+                                    alt="Payment Proof"
+                                    onError={(e) => {
+                                        e.target.style.display = 'none';
+                                        e.target.nextSibling.style.display = 'flex';
+                                    }}
+                                />
+                                <div className="image-error-fallback" style={{ display: 'none' }}>
+                                    <span className="fallback-icon">📸</span>
+                                    <p>Image not found</p>
+                                    {window.location.hostname.includes('vercel.app') && (
+                                        <small className="prod-tip">Tip: Production uses temporary storage. Images are cleared on restart.</small>
+                                    )}
+                                </div>
+                            </div>
                         </motion.div>
                     </motion.div>
                 )}

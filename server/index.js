@@ -3,6 +3,10 @@ const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs-extra');
+require('dotenv').config();
+const mongoose = require('mongoose');
+const User = require('./models/User');
+const Admin = require('./models/Admin');
 
 const app = express();
 const PORT = 5000;
@@ -102,33 +106,78 @@ app.get('/', (req, res) => {
     res.send(apiDoc);
 });
 
-// Environment-aware paths
+// MongoDB Connection
+const MONGODB_URI = process.env.MONGODB_URI;
+
+if (MONGODB_URI) {
+    mongoose.connect(MONGODB_URI)
+        .then(() => console.log('Connected to MongoDB Atlas'))
+        .catch(err => console.error('MongoDB Connection Error:', err));
+} else {
+    console.warn('⚠️ MONGODB_URI is not defined in environment variables. Persistence will be limited.');
+}
+
+// Environment-aware paths (Legacy for migration and uploads)
 const isProduction = process.env.VERCEL === '1';
 const BASE_DIR = isProduction ? '/tmp' : __dirname;
 const DATA_FILE = path.join(BASE_DIR, 'data.json');
 const UPLOADS_DIR = path.join(BASE_DIR, 'uploads');
 
-// Ensure directories and data file exist
+// Migration Logic: JSON to MongoDB
+const migrateData = async () => {
+    if (!fs.existsSync(DATA_FILE) || !MONGODB_URI) return;
+
+    try {
+        const data = await fs.readJson(DATA_FILE);
+        console.log('Starting migration from data.json to MongoDB...');
+
+        // Migrate Admins
+        if (data.admins && data.admins.length > 0) {
+            for (const adm of data.admins) {
+                await Admin.findOneAndUpdate(
+                    { username: adm.username },
+                    { password: adm.password },
+                    { upsert: true, new: true }
+                );
+            }
+            console.log(`Migrated ${data.admins.length} admins.`);
+        }
+
+        // Migrate Users
+        if (data.users && data.users.length > 0) {
+            for (const u of data.users) {
+                await User.findOneAndUpdate(
+                    { email: u.email },
+                    u,
+                    { upsert: true, new: true }
+                );
+            }
+            console.log(`Migrated ${data.users.length} users.`);
+        }
+
+        // Rename legacy file to prevent re-migration
+        await fs.rename(DATA_FILE, DATA_FILE + '.bak');
+        console.log('Migration complete. data.json backed up to data.json.bak');
+    } catch (error) {
+        console.error('Migration Error:', error.message);
+    }
+};
+
+// Ensure directories exist
 try {
     fs.ensureDirSync(UPLOADS_DIR);
-    if (!fs.existsSync(DATA_FILE)) {
-        fs.writeJsonSync(DATA_FILE, {
-            users: [],
-            admins: [{ username: 'admin', password: 'admin123' }]
-        });
-    } else {
-        const data = fs.readJsonSync(DATA_FILE);
-        if (!data.admins) {
-            data.admins = [{ username: 'admin', password: 'admin123' }];
-            fs.writeJsonSync(DATA_FILE, data);
-        }
-    }
 } catch (error) {
     console.warn('Filesystem warning:', error.message);
 }
 
+// Run migration if connected
+if (MONGODB_URI) {
+    migrateData();
+}
+
 app.use('/uploads', express.static(UPLOADS_DIR));
 
+// Storage setup
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, UPLOADS_DIR);
@@ -140,147 +189,153 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// Helpers
-const getData = () => fs.readJsonSync(DATA_FILE);
-const saveData = (data) => fs.writeJsonSync(DATA_FILE, data);
-const getUsers = () => getData().users;
-const saveUsers = (users) => {
-    const data = getData();
-    data.users = users;
-    saveData(data);
-};
-
 // Admin Login
-app.post('/api/admin/login', (req, res) => {
+app.post('/api/admin/login', async (req, res) => {
     const { username, password } = req.body;
-    const { admins } = getData();
-
-    const admin = admins.find(a => a.username === username && a.password === password);
-    if (admin) {
-        res.json({ success: true, token: 'fake-jwt-token', username: admin.username });
-    } else {
-        res.status(401).json({ success: false, error: 'Invalid credentials' });
+    try {
+        const admin = await Admin.findOne({ username, password });
+        if (admin) {
+            res.json({ success: true, token: 'fake-jwt-token', username: admin.username });
+        } else {
+            res.status(401).json({ success: false, error: 'Invalid credentials' });
+        }
+    } catch (error) {
+        res.status(500).json({ success: false, error: 'Login failed', reason: error.message });
     }
 });
 
 
 // Save Assessment
-app.post('/api/assessment', (req, res) => {
+app.post('/api/assessment', async (req, res) => {
     const { email, results, name, phone } = req.body;
-    const users = getUsers();
-    let user = users.find(u => u.email === email);
+    try {
+        let user = await User.findOne({ email });
 
-    if (user) {
-        if (user.status !== 'pending') {
-            return res.status(400).json({ success: false, error: 'Email already registered with an active plan.' });
+        if (user) {
+            if (user.status !== 'pending') {
+                return res.status(400).json({ success: false, error: 'Email already registered with an active plan.' });
+            }
+            user.results = results;
+            user.name = name || user.name;
+            user.phone = phone || user.phone;
+            await user.save();
+        } else {
+            user = new User({
+                email,
+                name: name || '',
+                phone: phone || '',
+                results,
+                status: 'pending',
+                signupDate: new Date()
+            });
+            await user.save();
         }
-        user.results = results;
-        user.name = name || user.name;
-        user.phone = phone || user.phone;
-    } else {
-        user = {
-            email,
-            name: name || '',
-            phone: phone || '',
-            results,
-            status: 'pending',
-            plan: null,
-            paymentMethod: null,
-            paymentProof: null,
-            completedTasks: [],
-            signupDate: new Date()
-        };
-        users.push(user);
-    }
 
-    saveUsers(users);
-    res.json({ success: true, user });
+        res.json({ success: true, user });
+    } catch (error) {
+        res.status(500).json({ success: false, error: 'Assessment save failed', reason: error.message });
+    }
 });
 
 // Manual Payment
-app.post('/api/payment/manual', upload.single('screenshot'), (req, res) => {
+app.post('/api/payment/manual', upload.single('screenshot'), async (req, res) => {
     const { email, transactionId, plan } = req.body;
-    const users = getUsers();
-    const user = users.find(u => u.email === email);
+    try {
+        const user = await User.findOne({ email });
 
-    if (user) {
-        user.plan = plan;
-        user.paymentMethod = 'manual';
-        user.transactionId = transactionId;
-        user.paymentProof = req.file.filename;
-        user.status = 'awaiting_approval';
-        saveUsers(users);
-        res.json({ success: true, user });
-    } else {
-        res.status(404).json({ error: 'User not found' });
+        if (user) {
+            user.plan = plan;
+            user.paymentMethod = 'manual';
+            user.transactionId = transactionId;
+            user.paymentProof = req.file.filename;
+            user.status = 'awaiting_approval';
+            await user.save();
+            res.json({ success: true, user });
+        } else {
+            res.status(404).json({ error: 'User not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ success: false, error: 'Payment submission failed', reason: error.message });
     }
 });
 
 // Online Payment
-app.post('/api/payment/online', (req, res) => {
+app.post('/api/payment/online', async (req, res) => {
     const { email, plan } = req.body;
-    const users = getUsers();
-    const user = users.find(u => u.email === email);
+    try {
+        const user = await User.findOne({ email });
 
-    if (user) {
-        user.plan = plan;
-        user.paymentMethod = 'online';
-        user.status = 'active';
-        saveUsers(users);
-        res.json({ success: true, user });
-    } else {
-        res.status(404).json({ error: 'User not found' });
+        if (user) {
+            user.plan = plan;
+            user.paymentMethod = 'online';
+            user.status = 'active';
+            await user.save();
+            res.json({ success: true, user });
+        } else {
+            res.status(404).json({ error: 'User not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ success: false, error: 'Payment processing failed', reason: error.message });
     }
 });
 
 // Get User Status
-app.get('/api/user/:email/status', (req, res) => {
-    const users = getUsers();
-    const user = users.find(u => u.email === req.params.email);
-    if (user) {
-        res.json(user);
-    } else {
-        res.status(404).json({ success: false, error: 'User not found' });
+app.get('/api/user/:email/status', async (req, res) => {
+    try {
+        const user = await User.findOne({ email: req.params.email });
+        if (user) {
+            res.json(user);
+        } else {
+            res.status(404).json({ success: false, error: 'User not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ success: false, error: 'Status check failed', reason: error.message });
     }
 });
 
 // Update Completed Tasks
-app.post('/api/user/:email/tasks', (req, res) => {
+app.post('/api/user/:email/tasks', async (req, res) => {
     const { taskId } = req.body;
-    const users = getUsers();
-    const user = users.find(u => u.email === req.params.email);
+    try {
+        const user = await User.findOne({ email: req.params.email });
 
-    if (user && user.status === 'active') {
-        if (!user.completedTasks.includes(taskId)) {
-            user.completedTasks.push(taskId);
-            saveUsers(users);
+        if (user && user.status === 'active') {
+            if (!user.completedTasks.includes(taskId)) {
+                user.completedTasks.push(taskId);
+                await user.save();
+            }
+            res.json({ success: true, completedTasks: user.completedTasks });
+        } else {
+            res.status(403).json({ error: 'Unauthorised or plan not active' });
         }
-        res.json({ success: true, completedTasks: user.completedTasks });
-    } else {
-        res.status(403).json({ error: 'Unauthorised or plan not active' });
+    } catch (error) {
+        res.status(500).json({ success: false, error: 'Task update failed', reason: error.message });
     }
 });
 
 // Update User Profile
-app.put('/api/user/:email/profile', (req, res) => {
+app.put('/api/user/:email/profile', async (req, res) => {
     const { name, phone } = req.body;
-    const users = getUsers();
-    const user = users.find(u => u.email === req.params.email);
+    try {
+        const user = await User.findOne({ email: req.params.email });
 
-    if (user) {
-        user.name = name || user.name;
-        user.phone = phone || user.phone;
-        saveUsers(users);
-        res.json({ success: true, user });
-    } else {
-        res.status(404).json({ success: false, error: 'User not found' });
+        if (user) {
+            user.name = name || user.name;
+            user.phone = phone || user.phone;
+            await user.save();
+            res.json({ success: true, user });
+        } else {
+            res.status(404).json({ success: false, error: 'User not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ success: false, error: 'Profile update failed', reason: error.message });
     }
 });
 
 // Admin: Get all users
-app.get('/api/admin/users', (req, res) => {
+app.get('/api/admin/users', async (req, res) => {
     try {
-        const users = getUsers();
+        const users = await User.find().sort({ signupDate: -1 });
         res.json(users);
     } catch (error) {
         console.error('Error in /api/admin/users:', error);
@@ -288,41 +343,49 @@ app.get('/api/admin/users', (req, res) => {
             success: false,
             error: 'Failed to retrieve users.',
             reason: error.message,
-            tip: isProduction ? 'Data might have been cleared due to ephemeral storage on Vercel.' : 'Check if data.json exists and is valid.'
+            tip: isProduction ? 'Check database connection and permissions.' : 'Database might be empty or connection failed.'
         });
     }
 });
 
 // Admin: Get all admins
-app.get('/api/admin/admins', (req, res) => {
-    const { admins } = getData();
-    res.json(admins.map(a => ({ username: a.username })));
+app.get('/api/admin/admins', async (req, res) => {
+    try {
+        const admins = await Admin.find({}, { password: 0 }); // Don't return passwords
+        res.json(admins);
+    } catch (error) {
+        res.status(500).json({ success: false, error: 'Failed to retrieve admins', reason: error.message });
+    }
 });
 
 // Admin: Create Super User
-app.post('/api/admin/create-super-user', (req, res) => {
+app.post('/api/admin/create-super-user', async (req, res) => {
     const { username, password } = req.body;
-    const data = getData();
+    try {
+        const existing = await Admin.findOne({ username });
+        if (existing) {
+            return res.status(400).json({ success: false, error: 'Admin username already exists' });
+        }
 
-    if (data.admins.find(a => a.username === username)) {
-        return res.status(400).json({ success: false, error: 'Admin username already exists' });
+        const newAdmin = new Admin({ username, password });
+        await newAdmin.save();
+
+        const admins = await Admin.find({}, { password: 0 });
+        res.json({ success: true, admins });
+    } catch (error) {
+        res.status(500).json({ success: false, error: 'Admin creation failed', reason: error.message });
     }
-
-    data.admins.push({ username, password });
-    saveData(data);
-    res.json({ success: true, admins: data.admins.map(a => ({ username: a.username })) });
 });
 
 // Admin: Approve user
-app.post('/api/admin/approve', (req, res) => {
+app.post('/api/admin/approve', async (req, res) => {
     const { email } = req.body;
     try {
-        const users = getUsers();
-        const user = users.find(u => u.email === email);
+        const user = await User.findOne({ email });
 
         if (user) {
             user.status = 'active';
-            saveUsers(users);
+            await user.save();
             res.json({ success: true, user });
         } else {
             res.status(404).json({ success: false, error: 'User not found in system.' });
@@ -339,7 +402,9 @@ app.get('/api/debug/system', (req, res) => {
         isProduction,
         BASE_DIR,
         DATA_FILE_EXISTS: fs.existsSync(DATA_FILE),
+        DATA_BAK_EXISTS: fs.existsSync(DATA_FILE + '.bak'),
         UPLOADS_DIR_EXISTS: fs.existsSync(UPLOADS_DIR),
+        MONGODB_CONNECTED: mongoose.connection.readyState === 1,
         current_time: new Date().toISOString()
     });
 });

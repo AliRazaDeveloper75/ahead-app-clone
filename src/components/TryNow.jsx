@@ -346,7 +346,6 @@ const TryNow = () => {
                     <div className="options-grid">
                         {q.options.map((option, idx) => (
                             <button key={idx} className="option-btn" onClick={() => handleSingleSelect(option.text)}>
-                                <span className="option-number">{idx + 1}</span>
                                 <span className="option-icon">{option.icon}</span>
                                 <span className="option-text">{option.text}</span>
                             </button>
@@ -363,7 +362,6 @@ const TryNow = () => {
                                     className={`option-btn ${multiSelect.includes(option.text) ? 'selected' : ''}`}
                                     onClick={() => handleMultiToggle(option.text)}
                                 >
-                                    <span className="option-number">{idx + 1}</span>
                                     <span className="option-icon">{option.icon}</span>
                                     <span className="option-text">{option.text}</span>
                                 </button>
@@ -382,9 +380,20 @@ const TryNow = () => {
                             <span>{q.labels[1]}</span>
                         </div>
                         <div className="scale-options">
-                            {[1, 2, 3, 4, 5].map(val => (
-                                <button key={val} className="scale-btn" onClick={() => handleScaleSelect(val)}>
-                                    {val === 3 ? '🦋' : val}
+                            {[
+                                { val: 1, icon: '😤' },
+                                { val: 2, icon: '😟' },
+                                { val: 3, icon: '😐' },
+                                { val: 4, icon: '😊' },
+                                { val: 5, icon: '🤩' }
+                            ].map(item => (
+                                <button
+                                    key={item.val}
+                                    className="scale-btn-icon"
+                                    onClick={() => handleScaleSelect(item.val)}
+                                    title={`Level ${item.val}`}
+                                >
+                                    {item.icon}
                                 </button>
                             ))}
                         </div>
