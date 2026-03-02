@@ -426,6 +426,7 @@ app.get('/api/debug/system', (req, res) => {
         DATA_BAK_EXISTS: fs.existsSync(DATA_FILE + '.bak'),
         UPLOADS_DIR_EXISTS: fs.existsSync(UPLOADS_DIR),
         MONGODB_CONNECTED: mongoose.connection.readyState === 1,
+        MONGODB_READY_STATE: mongoose.connection.readyState,
         MONGODB_URI_PRESENT: !!process.env.MONGODB_URI,
         MONGODB_LAST_ERROR: lastDbError,
         current_time: new Date().toISOString()
