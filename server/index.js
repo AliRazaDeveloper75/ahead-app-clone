@@ -108,11 +108,18 @@ app.get('/', (req, res) => {
 
 // MongoDB Connection
 const MONGODB_URI = process.env.MONGODB_URI;
+let lastDbError = null;
 
 if (MONGODB_URI) {
     mongoose.connect(MONGODB_URI)
-        .then(() => console.log('Connected to MongoDB Atlas'))
-        .catch(err => console.error('MongoDB Connection Error:', err));
+        .then(() => {
+            console.log('Connected to MongoDB Atlas');
+            lastDbError = null;
+        })
+        .catch(err => {
+            console.error('MongoDB Connection Error:', err);
+            lastDbError = err.message;
+        });
 } else {
     console.warn('⚠️ MONGODB_URI is not defined in environment variables. Persistence will be limited.');
 }
@@ -420,6 +427,7 @@ app.get('/api/debug/system', (req, res) => {
         UPLOADS_DIR_EXISTS: fs.existsSync(UPLOADS_DIR),
         MONGODB_CONNECTED: mongoose.connection.readyState === 1,
         MONGODB_URI_PRESENT: !!process.env.MONGODB_URI,
+        MONGODB_LAST_ERROR: lastDbError,
         current_time: new Date().toISOString()
     });
 });
