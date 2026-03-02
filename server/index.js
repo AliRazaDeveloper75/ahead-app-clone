@@ -429,6 +429,7 @@ app.get('/api/debug/system', (req, res) => {
         MONGODB_READY_STATE: mongoose.connection.readyState,
         MONGODB_URI_PRESENT: !!process.env.MONGODB_URI,
         MONGODB_LAST_ERROR: lastDbError,
+        VERSION_ID: 'debug-v3',
         current_time: new Date().toISOString()
     });
 });
