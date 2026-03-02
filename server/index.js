@@ -9,6 +9,8 @@ const mongoose = require('mongoose');
 const Admin = require('./models/Admin');
 const User = require('./models/User');
 
+const MONGODB_URI = process.env.MONGODB_URI;
+
 const app = express();
 const PORT = 5000;
 
