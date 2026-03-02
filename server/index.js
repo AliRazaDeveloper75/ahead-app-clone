@@ -4,15 +4,22 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs-extra');
 require('dotenv').config();
+const connectDB = require('./db');
 const mongoose = require('mongoose');
-const User = require('./models/User');
 const Admin = require('./models/Admin');
+const User = require('./models/User');
 
 const app = express();
 const PORT = 5000;
 
 app.use(cors());
 app.use(express.json());
+
+// Initialize Database Connection
+let lastDbError = null;
+connectDB().catch(err => {
+    lastDbError = err.message;
+});
 
 // Main documentation page
 app.get('/', (req, res) => {
@@ -106,28 +113,7 @@ app.get('/', (req, res) => {
     res.send(apiDoc);
 });
 
-// MongoDB Connection
-const MONGODB_URI = process.env.MONGODB_URI;
-let lastDbError = null;
-
-if (MONGODB_URI) {
-    mongoose.connect(MONGODB_URI, {
-        connectTimeoutMS: 5000,
-        serverSelectionTimeoutMS: 5000
-    })
-        .then(() => {
-            console.log('Connected to MongoDB Atlas');
-            lastDbError = null;
-        })
-        .catch(err => {
-            console.error('MongoDB Connection Error:', err);
-            lastDbError = err.message;
-        });
-} else {
-    console.warn('⚠️ MONGODB_URI is not defined in environment variables. Persistence will be limited.');
-}
-
-// Environment-aware paths (Legacy for migration and uploads)
+// Environment-aware paths
 const isProduction = process.env.VERCEL === '1';
 const BASE_DIR = isProduction ? '/tmp' : __dirname;
 const DATA_FILE = path.join(BASE_DIR, 'data.json');
@@ -217,13 +203,13 @@ const upload = multer({ storage });
 app.post('/api/admin/login', async (req, res) => {
     const { username, password } = req.body;
 
-    // Check DB connection state
-    if (mongoose.connection.readyState !== 1) {
-        const status = mongoose.connection.readyState === 2 ? 'Connecting to database...' : 'Database not connected.';
+    try {
+        await connectDB();
+    } catch (err) {
         return res.status(503).json({
             success: false,
-            error: status,
-            tip: 'Please wait a moment or check MONGODB_URI in Vercel settings.'
+            error: 'Database not connected.',
+            tip: 'CRITICAL: Ensure 0.0.0.0/0 is whitelisted in MongoDB Atlas Network Access. Vercel IPs are dynamic.'
         });
     }
 
@@ -369,11 +355,13 @@ app.put('/api/user/:email/profile', async (req, res) => {
 
 // Admin: Get all users
 app.get('/api/admin/users', async (req, res) => {
-    if (mongoose.connection.readyState !== 1) {
+    try {
+        await connectDB();
+    } catch (err) {
         return res.status(503).json({
             success: false,
             error: 'Database not connected.',
-            tip: 'Please ensure MONGODB_URI is set in Vercel environment variables and your IP is whitelisted in MongoDB Atlas.'
+            tip: 'Ensure 0.0.0.0/0 is whitelisted in MongoDB Atlas Network Access.'
         });
     }
     try {
@@ -447,6 +435,21 @@ app.post('/api/admin/approve', async (req, res) => {
 
 // Debug endpoint to check environment
 app.get('/api/debug/system', (req, res) => {
+    const rawUri = process.env.MONGODB_URI || '';
+    let redactedUri = 'NOT_PRESENT';
+    let uriFormatInfo = 'N/A';
+
+    if (rawUri) {
+        // Redact password: keep protocol and host, hide credentials
+        redactedUri = rawUri.replace(/:([^@]+)@/, ':****@');
+        uriFormatInfo = {
+            hasProtocol: rawUri.includes('mongodb+srv://') || rawUri.includes('mongodb://'),
+            hasCredentials: rawUri.includes(':') && rawUri.includes('@'),
+            hasDatabase: rawUri.split('/').length > 3 && rawUri.split('/')[3].split('?')[0].length > 0,
+            isPlaceholder: rawUri.includes('<password>') || rawUri.includes('your_')
+        };
+    }
+
     res.json({
         isProduction,
         BASE_DIR,
@@ -456,8 +459,10 @@ app.get('/api/debug/system', (req, res) => {
         MONGODB_CONNECTED: mongoose.connection.readyState === 1,
         MONGODB_READY_STATE: mongoose.connection.readyState,
         MONGODB_URI_PRESENT: !!process.env.MONGODB_URI,
+        MONGODB_URI_REDACTED: redactedUri,
+        MONGODB_URI_FORMAT: uriFormatInfo,
         MONGODB_LAST_ERROR: lastDbError,
-        VERSION_ID: 'debug-v3',
+        VERSION_ID: 'debug-v4-uri-check',
         current_time: new Date().toISOString()
     });
 });
