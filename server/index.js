@@ -173,6 +173,20 @@ const migrateData = async () => {
     }
 };
 
+// Default Admin Creation
+const ensureDefaultAdmin = async () => {
+    try {
+        const count = await Admin.countDocuments();
+        if (count === 0) {
+            const defaultAdmin = new Admin({ username: 'admin', password: 'admin123' });
+            await defaultAdmin.save();
+            console.log('Default admin created: admin/admin123');
+        }
+    } catch (error) {
+        console.error('Error ensuring default admin:', error.message);
+    }
+};
+
 // Ensure directories exist
 try {
     fs.ensureDirSync(UPLOADS_DIR);
@@ -182,7 +196,7 @@ try {
 
 // Run migration if connected
 if (MONGODB_URI) {
-    migrateData();
+    migrateData().then(() => ensureDefaultAdmin());
 }
 
 app.use('/uploads', express.static(UPLOADS_DIR));
@@ -202,6 +216,17 @@ const upload = multer({ storage });
 // Admin Login
 app.post('/api/admin/login', async (req, res) => {
     const { username, password } = req.body;
+
+    // Check DB connection state
+    if (mongoose.connection.readyState !== 1) {
+        const status = mongoose.connection.readyState === 2 ? 'Connecting to database...' : 'Database not connected.';
+        return res.status(503).json({
+            success: false,
+            error: status,
+            tip: 'Please wait a moment or check MONGODB_URI in Vercel settings.'
+        });
+    }
+
     try {
         const admin = await Admin.findOne({ username, password });
         if (admin) {

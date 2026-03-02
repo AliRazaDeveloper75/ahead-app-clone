@@ -56,10 +56,18 @@ const Navbar = () => {
         </div>
 
         <ul className={`nav-links ${isMobileMenuOpen ? 'active' : ''}`}>
-          <li><Link to="/emotions" onClick={() => setIsMobileMenuOpen(false)}>Emotions</Link></li>
-          <li><Link to="/manifesto" onClick={() => setIsMobileMenuOpen(false)}>Manifesto</Link></li>
-          <li><Link to="/self-awareness" onClick={() => setIsMobileMenuOpen(false)}>Self-Awareness</Link></li>
-          <li><Link to="/work" onClick={() => setIsMobileMenuOpen(false)}>Work With Us</Link></li>
+          <li><Link to="/emotions" onClick={() => setIsMobileMenuOpen(false)}>
+            <motion.span whileHover={{ y: -2 }} transition={{ type: "spring", stiffness: 400 }}>Emotions</motion.span>
+          </Link></li>
+          <li><Link to="/manifesto" onClick={() => setIsMobileMenuOpen(false)}>
+            <motion.span whileHover={{ y: -2 }} transition={{ type: "spring", stiffness: 400 }}>Manifesto</motion.span>
+          </Link></li>
+          <li><Link to="/self-awareness" onClick={() => setIsMobileMenuOpen(false)}>
+            <motion.span whileHover={{ y: -2 }} transition={{ type: "spring", stiffness: 400 }}>Self-Awareness</motion.span>
+          </Link></li>
+          <li><Link to="/work" onClick={() => setIsMobileMenuOpen(false)}>
+            <motion.span whileHover={{ y: -2 }} transition={{ type: "spring", stiffness: 400 }}>Work With Us</motion.span>
+          </Link></li>
           <li className="mobile-only-cta">
             {user ? (
               <div className="mobile-auth-stack">

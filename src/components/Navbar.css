@@ -1,20 +1,24 @@
 .navbar {
-    height: var(--header-height);
+    height: 80px;
     width: 100%;
     position: fixed;
     top: 0;
     left: 0;
     z-index: 1000;
     background-color: transparent;
-    transition: var(--transition-fast);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     display: flex;
     align-items: center;
+    padding: 0 40px;
 }
 
 .navbar.scrolled {
-    background-color: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(10px);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    background-color: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    height: 70px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .nav-content {
@@ -27,11 +31,20 @@
 .logo {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     font-family: 'Outfit', sans-serif;
-    font-weight: 700;
-    font-size: 1.5rem;
-    color: var(--primary);
+    font-weight: 800;
+    font-size: 1.6rem;
+    color: var(--text-main);
+    letter-spacing: -0.5px;
+    text-decoration: none;
+}
+
+.logo-text {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .logo-icon {
@@ -40,18 +53,39 @@
 
 .nav-links {
     display: flex;
-    gap: 30px;
+    gap: 40px;
     list-style: none;
+    margin: 0 auto;
 }
 
 .nav-links a {
-    font-weight: 500;
+    font-weight: 600;
+    font-size: 0.95rem;
     color: var(--text-main);
-    transition: var(--transition-fast);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    position: relative;
+    padding: 8px 0;
+}
+
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--primary), var(--primary-light));
+    transition: width 0.3s ease;
+    border-radius: 10px;
 }
 
 .nav-links a:hover {
     color: var(--primary);
+}
+
+.nav-links a:hover::after {
+    width: 100%;
 }
 
 .hamburger {
