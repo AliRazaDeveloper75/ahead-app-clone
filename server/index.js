@@ -436,7 +436,13 @@ app.post('/api/admin/approve', async (req, res) => {
 });
 
 // Debug endpoint to check environment
-app.get('/api/debug/system', (req, res) => {
+app.get('/api/debug/system', async (req, res) => {
+    try {
+        await connectDB();
+    } catch (err) {
+        lastDbError = err.message;
+    }
+
     const rawUri = process.env.MONGODB_URI || '';
     let redactedUri = 'NOT_PRESENT';
     let uriFormatInfo = 'N/A';
@@ -464,7 +470,7 @@ app.get('/api/debug/system', (req, res) => {
         MONGODB_URI_REDACTED: redactedUri,
         MONGODB_URI_FORMAT: uriFormatInfo,
         MONGODB_LAST_ERROR: lastDbError,
-        VERSION_ID: 'debug-v4-uri-check',
+        VERSION_ID: 'debug-v5-serverless-optimized',
         current_time: new Date().toISOString()
     });
 });

@@ -1,10 +1,16 @@
 const mongoose = require('mongoose');
 
-let cachedConnection = null;
+let cachedPromise = null;
 
 const connectDB = async () => {
-    if (cachedConnection && mongoose.connection.readyState === 1) {
-        return cachedConnection;
+    // 1. Return if already connected
+    if (mongoose.connection.readyState === 1) {
+        return mongoose.connection;
+    }
+
+    // 2. Return the existing connection attempt if one is in progress
+    if (cachedPromise) {
+        return cachedPromise;
     }
 
     const MONGODB_URI = process.env.MONGODB_URI;
@@ -14,17 +20,22 @@ const connectDB = async () => {
     }
 
     try {
-        // In serverless, we want to maintain the connection if possible
-        cachedConnection = await mongoose.connect(MONGODB_URI, {
-            connectTimeoutMS: 5000,
-            serverSelectionTimeoutMS: 5000,
+        console.log('🔄 Attemping to connect to MongoDB...');
+
+        // 3. Store the promise so concurrent calls reuse it
+        cachedPromise = mongoose.connect(MONGODB_URI, {
+            connectTimeoutMS: 10000,
+            serverSelectionTimeoutMS: 10000,
             socketTimeoutMS: 45000,
+            heartbeatFrequencyMS: 10000,
         });
-        
-        console.log('Successfully connected to MongoDB');
-        return cachedConnection;
+
+        const connection = await cachedPromise;
+        console.log('✅ Successfully connected to MongoDB');
+        return connection;
     } catch (error) {
-        console.error('Failed to connect to MongoDB:', error.message);
+        console.error('❌ Failed to connect to MongoDB:', error.message);
+        cachedPromise = null; // Reset so the next request can try again
         throw error;
     }
 };
