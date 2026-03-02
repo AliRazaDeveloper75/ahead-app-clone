@@ -46,6 +46,7 @@ const ImprovementPlan = () => {
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [activeTask, setActiveTask] = useState(null); // The task currently being viewed
 
     const email = localStorage.getItem('mind-thinker-user');
@@ -59,12 +60,20 @@ const ImprovementPlan = () => {
     }, [email]);
 
     const fetchUserStatus = async () => {
+        setLoading(true);
+        setError(null);
         try {
             const response = await fetch(`/api/user/${email}/status`);
-            const data = await response.json();
-            setUser(data);
+            if (response.ok) {
+                const data = await response.json();
+                setUser(data);
+            } else {
+                const errorData = await response.json();
+                setError(errorData.error || 'Plan data not found');
+            }
         } catch (error) {
             console.error('Error fetching status:', error);
+            setError('Connection error. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -88,6 +97,22 @@ const ImprovementPlan = () => {
     };
 
     if (loading) return <div className="dashboard-loading">Loading your plan...</div>;
+
+    if (error || !user) {
+        return (
+            <div className="plan-error-container">
+                <div className="error-card">
+                    <span className="error-icon">🗺️</span>
+                    <h2>Plan Not Found</h2>
+                    <p>{error || "We couldn't retrieve your growth plan. It may have been cleared during a server update."}</p>
+                    <div className="error-actions">
+                        <button className="btn btn-primary" onClick={fetchUserStatus}>Retry Loading</button>
+                        <button className="btn btn-outline" onClick={() => navigate('/try-now')}>Recalculate Plan</button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     if (user.status !== 'active') {
         return (

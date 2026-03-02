@@ -9,6 +9,7 @@ const UserProfile = () => {
     const [loading, setLoading] = useState(true);
     const [isEditing, setIsEditing] = useState(false);
     const [editData, setEditData] = useState({ name: '', phone: '' });
+    const [error, setError] = useState(null);
     const [saving, setSaving] = useState(false);
 
     const email = localStorage.getItem('mind-thinker-user');
@@ -22,13 +23,21 @@ const UserProfile = () => {
     }, [email]);
 
     const fetchUserStatus = async () => {
+        setLoading(true);
+        setError(null);
         try {
             const response = await fetch(`/api/user/${email}/status`);
-            const data = await response.json();
-            setUser(data);
-            setEditData({ name: data.name || '', phone: data.phone || '' });
+            if (response.ok) {
+                const data = await response.json();
+                setUser(data);
+                setEditData({ name: data.name || '', phone: data.phone || '' });
+            } else {
+                const errorData = await response.json();
+                setError(errorData.error || 'Profile not found');
+            }
         } catch (error) {
             console.error('Error fetching user profile:', error);
+            setError('Connection error. Please try again later.');
         } finally {
             setLoading(false);
         }
@@ -50,6 +59,7 @@ const UserProfile = () => {
             }
         } catch (error) {
             console.error('Error updating profile:', error);
+            alert('Failed to save profile changes.');
         } finally {
             setSaving(false);
         }
@@ -63,6 +73,20 @@ const UserProfile = () => {
                 className="loader-icon"
             >🧠</motion.div>
             <p>Analyzing your growth path...</p>
+        </div>
+    );
+
+    if (error || !user) return (
+        <div className="profile-error-container">
+            <div className="error-card">
+                <span className="error-icon">🔍</span>
+                <h2>Profile Not Found</h2>
+                <p>{error || "We couldn't find your profile data. This might be because the server was recently restarted or your session has expired."}</p>
+                <div className="error-actions">
+                    <button className="btn btn-primary" onClick={fetchUserStatus}>Retry</button>
+                    <button className="btn btn-outline" onClick={() => navigate('/try-now')}>Start New Assessment</button>
+                </div>
+            </div>
         </div>
     );
 
