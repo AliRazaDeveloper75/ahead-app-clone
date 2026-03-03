@@ -19,6 +19,9 @@ import SelfAwarenessPage from './pages/SelfAwarenessPage';
 import AboutUs from './pages/AboutUs';
 import ContactUs from './pages/ContactUs';
 import './App.css';
+import FAQ from './pages/FAQ';
+import TermsConditions from './pages/TermsConditions';
+import PrivacyPolicy from './pages/PrivacyPolicy';
 
 const LayoutWrapper = ({ children }) => {
   const location = useLocation();
@@ -56,6 +59,10 @@ function App() {
           <Route path="/self-awareness" element={<SelfAwarenessPage />} />
           <Route path="/about" element={<AboutUs />} />
           <Route path="/contact" element={<ContactUs />} />
+          <Route path="/faqs" element={<FAQ />} />
+          <Route path="/terms-of-use" element={<TermsConditions />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+
         </Routes>
       </LayoutWrapper>
     </Router>

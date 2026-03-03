@@ -47,10 +47,10 @@ const Footer = () => {
                         <div className="footer-column">
                             <h4>Legal</h4>
                             <ul>
-                                <li><Link to="/find-profile">Find Profile</Link></li>
+                                <li><Link to="/faqs">FAQs</Link></li>
+                                <li><Link to="/terms-of-use">Terms of Use</Link></li>
+                                <li><Link to="/privacy-policy">Privacy Policy</Link></li>
                                 <li><Link to="/find-profile">User Dashboard</Link></li>
-                                <li><Link to="/admin-login">Admin Dashboard</Link></li>
-                                <li><Link to="/try-now">Take Assessment</Link></li>
 
                             </ul>
                         </div>
