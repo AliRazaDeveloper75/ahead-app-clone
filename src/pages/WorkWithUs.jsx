@@ -35,7 +35,7 @@ const WorkWithUs = () => {
 
                 <div className="contact-cta">
                     <h3>Don't see a role?</h3>
-                    <p>Send your vision and CV to <strong>careers@mind-thinker.com</strong></p>
+                    <p>Send your vision and CV to <strong>careers@mind-orbit.com</strong></p>
                 </div>
             </div>
         </div>

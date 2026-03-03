@@ -171,7 +171,14 @@ const AdminPanel = () => {
         revenue: users.filter(u => u.status === 'active').length * 19.60 // Example calculation
     };
 
-    if (loading) return <div className="admin-loading">Loading Dashboard...</div>;
+    if (loading) return (
+        <div className="global-loader-container">
+            <div className="loader-ring">
+                <span className="loader-icon-inner">🛡️</span>
+            </div>
+            <p className="loader-text">Securing Dashboard...</p>
+        </div>
+    );
 
     return (
         <div className={`admin-dashboard ${isSidebarOpen ? 'sidebar-open' : ''}`}>

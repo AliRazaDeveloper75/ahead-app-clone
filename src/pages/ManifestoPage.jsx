@@ -11,7 +11,7 @@ const ManifestoPage = () => {
                     animate={{ opacity: 1, scale: 1 }}
                     className="page-header"
                 >
-                    <h1>The Mind-Thinker Manifesto</h1>
+                    <h1>The Mind Orbit Manifesto</h1>
                     <p>A new philosophy for the digital mind.</p>
                 </motion.header>
 

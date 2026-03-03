@@ -66,13 +66,11 @@ const UserProfile = () => {
     };
 
     if (loading) return (
-        <div className="dashboard-loading">
-            <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-                className="loader-icon"
-            >🧠</motion.div>
-            <p>Analyzing your growth path...</p>
+        <div className="global-loader-container">
+            <div className="loader-ring">
+                <span className="loader-icon-inner">🧠</span>
+            </div>
+            <p className="loader-text">Analyzing your growth...</p>
         </div>
     );
 

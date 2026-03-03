@@ -4,34 +4,34 @@ import './Features.css';
 
 const featureCards = [
     {
-        title: "Thinker's Block?",
-        text: "Understand why your brain stops when things get tough and how to push through.",
-        icon: "🧱",
-        color: "#E9D5FF"
+        title: "Stress Mastery",
+        text: "Calm your mind instantly with science-backed exercises designed for high-pressure moments.",
+        icon: "🧘",
+        color: "#F3E8FF"
     },
     {
-        title: "Emotional Control",
-        text: "Learn to spot your emotions before they take control of your actions.",
-        icon: "⚡",
-        color: "#DBEAFE"
+        title: "Emotional Mapping",
+        text: "Decode your feelings in real-time. Understand the 'why' behind your moods.",
+        icon: "🧠",
+        color: "#E0F2FE"
     },
     {
-        title: "Focus and Flow",
-        text: "Discover techniques to enter a state of flow and stay focused on what matters.",
-        icon: "🌊",
-        color: "#FEF3C7"
+        title: "Habit Architecture",
+        text: "Build lasting positive habits and break toxic cycles with bite-sized daily challenges.",
+        icon: "🌱",
+        color: "#DCFCE7"
     },
     {
-        title: "Social Intelligence",
-        text: "Improve your relationships by understanding the feelings of those around you.",
-        icon: "🤝",
+        title: "Anger Control",
+        text: "Identify triggers and master the pause between impulse and action.",
+        icon: "🔥",
         color: "#FEE2E2"
     },
     {
-        title: "Daily Habits",
-        text: "Build lasting habits with bite-sized lessons that fit into your busy schedule.",
-        icon: "📅",
-        color: "#D1FAE5"
+        title: "Peak Focus",
+        text: "Eliminate anxiety-driven distractions and enter your zone of deep work.",
+        icon: "🎯",
+        color: "#FFEDD5"
     }
 ];
 
@@ -46,7 +46,7 @@ const Features = () => {
                         viewport={{ once: true }}
                         transition={{ duration: 0.6 }}
                     >
-                        EQ beats IQ
+                        Your Emotional Navigator
                     </motion.h2>
                     <motion.div
                         className="header-text"
@@ -55,7 +55,7 @@ const Features = () => {
                         viewport={{ once: true }}
                         transition={{ duration: 0.6 }}
                     >
-                        <p>People with high emotional intelligence (EQ) live more fulfilled lives. They tend to be more successful and have healthier relationships.</p>
+                        <p>Mind Orbit helps you navigate the complexities of your mind with precision and grace. Master your reactions and unlock a more balanced life.</p>
                     </motion.div>
                 </div>
 

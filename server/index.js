@@ -8,6 +8,7 @@ const connectDB = require('./db');
 const mongoose = require('mongoose');
 const Admin = require('./models/Admin');
 const User = require('./models/User');
+const Message = require('./models/Message');
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
@@ -31,7 +32,7 @@ app.get('/', (req, res) => {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Mind Thinker API Documentation</title>
+        <title>Mind Orbit API Documentation</title>
         <style>
             body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 900px; margin: 0 auto; padding: 40px 20px; background-color: #f4f7f6; }
             .container { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
@@ -54,7 +55,7 @@ app.get('/', (req, res) => {
     </head>
     <body>
         <div class="container">
-            <h1>Mind Thinker Backend Documentation</h1>
+            <h1>Mind Orbit Backend Documentation</h1>
             
             <div class="warning">
                 <h3>⚠️ Data Persistence Notice</h3>
@@ -107,6 +108,15 @@ app.get('/', (req, res) => {
             <div class="endpoint">
                 <span class="method GET">GET</span> <span class="path">/api/debug/system</span>
                 <div class="desc">Check environment and file system status.</div>
+            </div>
+
+            <div class="endpoint">
+                <span class="method POST">POST</span> <span class="path">/api/contact</span>
+                <div class="desc">Submit a contact form message.</div>
+                <details>
+                    <summary>View Format</summary>
+                    <pre>Body: { "name": "...", "email": "...", "message": "..." }</pre>
+                </details>
             </div>
         </div>
     </body>
@@ -449,6 +459,19 @@ app.post('/api/admin/create-super-user', async (req, res) => {
         res.json({ success: true, admins });
     } catch (error) {
         res.status(500).json({ success: false, error: 'Admin creation failed', reason: error.message });
+    }
+});
+
+// Contact Form Submission
+app.post('/api/contact', async (req, res) => {
+    const { name, email, message } = req.body;
+    try {
+        await connectDB();
+        const newMessage = new Message({ name, email, message });
+        await newMessage.save();
+        res.json({ success: true, message: 'Message sent successfully!' });
+    } catch (error) {
+        res.status(500).json({ success: false, error: 'Failed to send message', reason: error.message });
     }
 });
 

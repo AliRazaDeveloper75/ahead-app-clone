@@ -15,11 +15,11 @@ const Manifesto = () => {
                 >
                     <div className="manifesto-header">
                         <span>Built by experts</span>
-                        <h2>The Mind Thinker Manifesto</h2>
+                        <h2>The Mind Orbit Manifesto</h2>
                     </div>
                     <div className="manifesto-content">
-                        <p>Our mission is to help people live more fulfilled lives through better self-understanding. We combine cutting-edge behavioral science with beautiful design to create tools that people actually love using.</p>
-                        <p>We believe that emotional intelligence is a skill that can be learned, practiced, and mastered. Mind-Thinker is your companion on this journey of self-discovery and growth.</p>
+                        <p>At Mind Orbit, our mission is to redefine the intersection of technology and emotional intelligence. We bridge the gap between behavioral science and daily life, providing you with the tools to master your internal landscape.</p>
+                        <p>We believe that managing stress, anxiety, and habits is not just a goal, but a lifelong skill. Mind Orbit is your architect for a more centered and purposeful future.</p>
                     </div>
                 </motion.div>
             </div>

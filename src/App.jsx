@@ -16,7 +16,8 @@ import MobileBottomNav from './components/MobileBottomNav';
 import Emotions from './pages/Emotions';
 import ManifestoPage from './pages/ManifestoPage';
 import SelfAwarenessPage from './pages/SelfAwarenessPage';
-import WorkWithUs from './pages/WorkWithUs';
+import AboutUs from './pages/AboutUs';
+import ContactUs from './pages/ContactUs';
 import './App.css';
 
 const LayoutWrapper = ({ children }) => {
@@ -53,7 +54,8 @@ function App() {
           <Route path="/emotions" element={<Emotions />} />
           <Route path="/manifesto" element={<ManifestoPage />} />
           <Route path="/self-awareness" element={<SelfAwarenessPage />} />
-          <Route path="/work" element={<WorkWithUs />} />
+          <Route path="/about" element={<AboutUs />} />
+          <Route path="/contact" element={<ContactUs />} />
         </Routes>
       </LayoutWrapper>
     </Router>

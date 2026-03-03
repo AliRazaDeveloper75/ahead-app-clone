@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import './Navbar.css';
+import logo from '../assets/logo.png';
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [user, setUser] = useState(localStorage.getItem('mind-thinker-user'));
+  const [user, setUser] = useState(localStorage.getItem('mind-orbit-user'));
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -17,7 +18,7 @@ const Navbar = () => {
 
     // Listen for storage changes to update auth state
     const handleAuthChange = () => {
-      setUser(localStorage.getItem('mind-thinker-user'));
+      setUser(localStorage.getItem('mind-orbit-user'));
     };
     window.addEventListener('storage', handleAuthChange);
 
@@ -28,7 +29,7 @@ const Navbar = () => {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('mind-thinker-user');
+    localStorage.removeItem('mind-orbit-user');
     setUser(null);
     setIsMobileMenuOpen(false);
     navigate('/');
@@ -45,8 +46,8 @@ const Navbar = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <span className="logo-icon">✨</span>
-            <span className="logo-text">Mind Thinker</span>
+            <img src={logo} alt="Mind Orbit" className="logo-img" style={{ height: '80px', padding: '10px 0' }} />
+            {/* <span className="logo-text">Mind Orbit</span> */}
           </motion.div>
         </Link>
 
@@ -66,8 +67,11 @@ const Navbar = () => {
           <li><Link to="/self-awareness" onClick={() => setIsMobileMenuOpen(false)}>
             <motion.span whileHover={{ y: -2 }} transition={{ type: "spring", stiffness: 400 }}>Self-Awareness</motion.span>
           </Link></li>
-          <li><Link to="/work" onClick={() => setIsMobileMenuOpen(false)}>
-            <motion.span whileHover={{ y: -2 }} transition={{ type: "spring", stiffness: 400 }}>Work With Us</motion.span>
+          <li><Link to="/about" onClick={() => setIsMobileMenuOpen(false)}>
+            <motion.span whileHover={{ y: -2 }} transition={{ type: "spring", stiffness: 400 }}>About Us</motion.span>
+          </Link></li>
+          <li><Link to="/contact" onClick={() => setIsMobileMenuOpen(false)}>
+            <motion.span whileHover={{ y: -2 }} transition={{ type: "spring", stiffness: 400 }}>Contact Us</motion.span>
           </Link></li>
           <li className="mobile-only-cta">
             {user ? (

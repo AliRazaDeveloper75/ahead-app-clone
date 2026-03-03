@@ -4,22 +4,22 @@ import './Testimonials.css';
 
 const testimonials = [
     {
-        name: "Daneveryguy",
-        text: "I downloaded this app last summer when I was in a really dark place in my life. It has helped me exponentially the last few months.",
-        role: "User",
-        icon: "🌟"
+        name: "Sarah Jenkins",
+        text: "Mind Orbit has completely shifted how I handle stress at work. The real-time insights helped me spot my anger triggers before they spiraled.",
+        role: "Creative Director",
+        icon: "✨"
     },
     {
-        name: "Shanteres",
-        text: "Love this app and I never write reviews. For once in a long time I feel there’s hope with procrastination.",
-        role: "User",
-        icon: "🌈"
+        name: "Michael Chen",
+        text: "The habit architecture tools are a game-changer. I've finally broken a decade-long cycle of procrastination using their daily challenges.",
+        role: "Software Architect",
+        icon: "🚀"
     },
     {
-        name: "Jarbobius",
-        text: "This app is amazing- it works so well in my busy schedule. The daily lessons provide great food for my brain.",
+        name: "Elena Rodriguez",
+        text: "I used to feel overwhelmed by anxiety. This app gave me the vocabulary to understand my emotions and the techniques to find my flow again.",
         role: "User",
-        icon: "💎"
+        icon: "🌊"
     }
 ];
 
@@ -33,7 +33,7 @@ const Testimonials = () => {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                 >
-                    <h2>Hear what the Mind-Thinker family are saying</h2>
+                    <h2>Hear what the Mind Orbit family are saying</h2>
                 </motion.div>
 
                 <div className="testimonials-grid">

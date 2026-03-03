@@ -220,7 +220,7 @@ const questions = [
     {
         id: 23,
         type: 'single',
-        question: "Was Ahead recommended to you by an expert?",
+        question: "Was Mind Orbit recommended to you by an expert?",
         icon: "🩺",
         options: [
             { text: "Yes", icon: "👩‍⚕️" },
@@ -304,7 +304,7 @@ const TryNow = () => {
         } else {
             setIsFinished(true);
             // Save results to localStorage
-            localStorage.setItem('mind-thinker-results', JSON.stringify(updatedAnswers));
+            localStorage.setItem('mind-orbit-results', JSON.stringify(updatedAnswers));
         }
     };
 
@@ -324,7 +324,7 @@ const TryNow = () => {
                 });
                 const data = await response.json();
                 if (data.success) {
-                    localStorage.setItem('mind-thinker-user', email);
+                    localStorage.setItem('mind-orbit-user', email);
                     navigate('/plan');
                 } else {
                     alert(data.error || 'Failed to save assessment.');
