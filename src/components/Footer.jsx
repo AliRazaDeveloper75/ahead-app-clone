@@ -7,8 +7,8 @@ const Footer = () => {
             <div className="container footer-content">
                 <div className="footer-top">
                     <div className="footer-logo">
-                        <span className="logo-icon">🧠</span>
-                        <span className="logo-text">mind-thinker</span>
+                        <span className="logo-icon">✨</span>
+                        <span className="logo-text">Mind Thinker</span>
                     </div>
                     <p className="footer-tagline">Your pocket coach to master emotions and transform your life.</p>
                 </div>
@@ -28,7 +28,7 @@ const Footer = () => {
                 </div>
 
                 <div className="footer-bottom">
-                    <p>&copy; {new Date().getFullYear()} Mind-Thinker Solutions GmbH. All rights reserved.</p>
+                    <p>&copy; {new Date().getFullYear()} Mind-Thinker Solutions. All rights reserved.</p>
                     <div className="app-badges">
                         <span className="badge">App Store</span>
                         <span className="badge">Play Store</span>

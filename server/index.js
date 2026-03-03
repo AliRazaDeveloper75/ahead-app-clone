@@ -386,14 +386,49 @@ app.get('/api/admin/users', async (req, res) => {
     }
 });
 
-// Admin: Get all admins
+// Admin: Get all admins (include passwords for management)
 app.get('/api/admin/admins', async (req, res) => {
     try {
         await connectDB();
-        const admins = await Admin.find({}, { password: 0 }); // Don't return passwords
+        const admins = await Admin.find({});
         res.json(admins);
     } catch (error) {
         res.status(500).json({ success: false, error: 'Failed to retrieve admins', reason: error.message });
+    }
+});
+
+// Admin: Delete an admin
+app.delete('/api/admin/admins/:username', async (req, res) => {
+    const { username } = req.params;
+    if (username === 'admin') {
+        return res.status(403).json({ success: false, error: 'Cannot delete the primary admin account.' });
+    }
+    try {
+        await connectDB();
+        const result = await Admin.findOneAndDelete({ username });
+        if (result) {
+            res.json({ success: true, message: 'Admin deleted successfully' });
+        } else {
+            res.status(404).json({ success: false, error: 'Admin not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ success: false, error: 'Deletion failed', reason: error.message });
+    }
+});
+
+// Admin: Delete a user
+app.delete('/api/admin/users/:email', async (req, res) => {
+    const { email } = req.params;
+    try {
+        await connectDB();
+        const result = await User.findOneAndDelete({ email });
+        if (result) {
+            res.json({ success: true, message: 'User deleted successfully' });
+        } else {
+            res.status(404).json({ success: false, error: 'User not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ success: false, error: 'Deletion failed', reason: error.message });
     }
 });
 

@@ -78,14 +78,23 @@ const UserProfile = () => {
 
     if (error || !user) return (
         <div className="profile-error-container">
-            <div className="error-card">
-                <span className="error-icon">🔍</span>
-                <h2>Profile Not Found</h2>
-                <p>{error || "We couldn't find your profile data. This might be because the server was recently restarted or your session has expired."}</p>
+            <div className="error-card glass-card">
+                <span className="error-icon">👤</span>
+                <h2>Account Not Found</h2>
+                <p>
+                    {error === 'Profile not found'
+                        ? "We couldn't find your data. It looks like you haven't started your journey yet or your session has expired."
+                        : (error || "There was a problem loading your profile.")}
+                </p>
                 <div className="error-actions">
-                    <button className="btn btn-primary" onClick={fetchUserStatus}>Retry</button>
-                    <button className="btn btn-outline" onClick={() => navigate('/try-now')}>Start New Assessment</button>
+                    <button className="btn btn-primary" onClick={() => navigate('/try-now')}>
+                        ✨ Start First Assessment
+                    </button>
+                    <button className="btn btn-outline" onClick={() => navigate('/admin-login')}>
+                        🔐 Staff Login
+                    </button>
                 </div>
+                <p className="error-tip">Tip: Use the same email you used for your assessment.</p>
             </div>
         </div>
     );

@@ -12,7 +12,7 @@ const Hero = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, ease: "easeOut" }}
                 >
-                    <span className="hero-badge">Ahead App - Emotions Coach</span>
+                    <span className="hero-badge">Mind Thinker - Emotions Coach</span>
                     <h1 className="hero-title">
                         The Duolingo for your <span className="highlight">emotional intelligence</span>
                     </h1>
@@ -20,10 +20,10 @@ const Hero = () => {
                         Your AI pocket therapist, built by scientists trained at Universities of Oxford, Cambridge, and Harvard.
                     </p>
                     <div className="hero-actions">
-                        <button className="btn btn-primary">Download on App Store</button>
+                        <a href="/downloads/mind-thinker-app.zip" download className="btn btn-primary">Download App</a>
                         <div className="rating">
                             <div className="stars">⭐⭐⭐⭐⭐</div>
-                            <p>100k+ downloads on App Store</p>
+                            <p>100k+ downloads globally</p>
                         </div>
                     </div>
                 </motion.div>

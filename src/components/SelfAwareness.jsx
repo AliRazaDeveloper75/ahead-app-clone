@@ -1,5 +1,5 @@
-import React from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import './SelfAwareness.css';
 
 const SelfAwareness = () => {
@@ -16,7 +16,7 @@ const SelfAwareness = () => {
                     >
                         <h3>We're hiring! Join the team.</h3>
                         <p>Help us build the future of emotional health. We're looking for passionate individuals to join our mission.</p>
-                        <button className="btn btn-outline">See open positions</button>
+                        <Link to="/work" className="btn btn-outline">See open positions</Link>
                     </motion.div>
 
                     <motion.div
@@ -29,7 +29,7 @@ const SelfAwareness = () => {
                         <div className="test-badge">Take the test</div>
                         <h2>How self-aware are you?</h2>
                         <p>Our science-backed test takes only 5 minutes and provides deep insights into your personality.</p>
-                        <button className="btn btn-primary">Start the test</button>
+                        <Link to="/try-now" className="btn btn-primary">Start the test</Link>
                     </motion.div>
                 </div>
             </div>

@@ -101,13 +101,13 @@ const ImprovementPlan = () => {
     if (error || !user) {
         return (
             <div className="plan-error-container">
-                <div className="error-card">
+                <div className="error-card glass-card">
                     <span className="error-icon">🗺️</span>
                     <h2>Plan Not Found</h2>
-                    <p>{error || "We couldn't retrieve your growth plan. It may have been cleared during a server update."}</p>
+                    <p>{error === 'Plan data not found' ? "We couldn't find your personalized growth plan. You'll need to complete an assessment first." : (error || "There was a problem loading your plan.")}</p>
                     <div className="error-actions">
-                        <button className="btn btn-primary" onClick={fetchUserStatus}>Retry Loading</button>
-                        <button className="btn btn-outline" onClick={() => navigate('/try-now')}>Recalculate Plan</button>
+                        <button className="btn btn-primary" onClick={() => navigate('/try-now')}>✨ Start New Assessment</button>
+                        <button className="btn btn-outline" onClick={() => navigate('/')}>Home</button>
                     </div>
                 </div>
             </div>
@@ -130,10 +130,12 @@ const ImprovementPlan = () => {
                                 ? 'We are verifying your payment screenshot. This usually takes 1-2 hours.'
                                 : 'Please complete your payment to unlock your 4-week improvement plan.'}
                         </p>
-                        {user.status === 'pending' && (
-                            <button className="btn btn-primary" onClick={() => navigate('/plan')}>Go to Payment</button>
-                        )}
-                        <button className="btn btn-outline" onClick={() => navigate('/')}>Back Home</button>
+                        {user.status === 'pending' || !user.plan ? (
+                            <button className="btn btn-primary" onClick={() => navigate('/plan')}>✨ Unlock Full Plan</button>
+                        ) : user.status === 'awaiting_approval' ? (
+                            <div className="status-badge">Verifying Payment...</div>
+                        ) : null}
+                        <button className="btn btn-outline" onClick={() => navigate('/try-now')}>Start New Assessment</button>
                     </motion.div>
                 </div>
             </div>

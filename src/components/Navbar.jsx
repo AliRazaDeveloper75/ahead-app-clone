@@ -45,8 +45,8 @@ const Navbar = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <span className="logo-icon">🧠</span>
-            <span className="logo-text">mind-thinker</span>
+            <span className="logo-icon">✨</span>
+            <span className="logo-text">Mind Thinker</span>
           </motion.div>
         </Link>
 

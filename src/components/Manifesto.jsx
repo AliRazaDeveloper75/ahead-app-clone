@@ -15,7 +15,7 @@ const Manifesto = () => {
                 >
                     <div className="manifesto-header">
                         <span>Built by experts</span>
-                        <h2>The Ahead Manifesto</h2>
+                        <h2>The Mind Thinker Manifesto</h2>
                     </div>
                     <div className="manifesto-content">
                         <p>Our mission is to help people live more fulfilled lives through better self-understanding. We combine cutting-edge behavioral science with beautiful design to create tools that people actually love using.</p>

@@ -119,6 +119,40 @@ const AdminPanel = () => {
         }
     };
 
+    const handleDeleteUser = async (email) => {
+        if (!window.confirm(`Are you sure you want to permanently delete user ${email}?`)) return;
+        try {
+            const response = await fetch(`/api/admin/users/${email}`, { method: 'DELETE' });
+            const data = await response.json();
+            if (data.success) {
+                alert('User deleted successfully');
+                fetchData();
+            } else {
+                alert(`Delete failed: ${data.error}`);
+            }
+        } catch (error) {
+            console.error('Delete user error:', error);
+            alert('An error occurred during deletion.');
+        }
+    };
+
+    const handleDeleteAdmin = async (username) => {
+        if (!window.confirm(`Are you sure you want to delete super user ${username}?`)) return;
+        try {
+            const response = await fetch(`/api/admin/admins/${username}`, { method: 'DELETE' });
+            const data = await response.json();
+            if (data.success) {
+                alert('Admin deleted successfully');
+                fetchData();
+            } else {
+                alert(`Delete failed: ${data.error}`);
+            }
+        } catch (error) {
+            console.error('Delete admin error:', error);
+            alert('An error occurred during deletion.');
+        }
+    };
+
     const handleLogout = () => {
         localStorage.removeItem('admin-token');
         navigate('/admin-login');
@@ -300,11 +334,18 @@ const AdminPanel = () => {
                                             <div className="admin-avatar">{adm.username[0].toUpperCase()}</div>
                                             <div className="admin-info">
                                                 <strong>{adm.username}</strong>
-                                                <span>Admin Account</span>
+                                                <span className="admin-pass">Pass: {adm.password}</span>
                                             </div>
-                                            {adm.username !== 'admin' && (
-                                                <span className="admin-tag">Super User</span>
-                                            )}
+                                            <div className="admin-actions">
+                                                {adm.username !== 'admin' ? (
+                                                    <>
+                                                        <span className="admin-tag">Super User</span>
+                                                        <button className="btn-delete-small" onClick={() => handleDeleteAdmin(adm.username)}>Delete</button>
+                                                    </>
+                                                ) : (
+                                                    <span className="admin-tag main">Primary Admin</span>
+                                                )}
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
@@ -361,6 +402,7 @@ const AdminPanel = () => {
                                                     {user.status === 'awaiting_approval' && (
                                                         <button className="btn-approve-small" onClick={() => handleApprove(user.email)}>✔ Approve</button>
                                                     )}
+                                                    <button className="btn-icon btn-delete" title="Delete User" onClick={() => handleDeleteUser(user.email)}>🗑️</button>
                                                 </td>
                                             </tr>
                                         ))}
